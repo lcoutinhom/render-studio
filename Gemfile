@@ -9,7 +9,7 @@ gem "devise", "~> 5.0"
 gem "pundit", "~> 2.5"
 gem "inertia_rails", "~> 3.0"
 gem "vite_rails", "~> 3.0"
-gem "solid_queue", "~> 1.3"
+gem "solid_queue", "~> 1.7"
 gem "solid_cache", "~> 1.0"
 gem "solid_cable", "~> 3.0"
 gem "dotenv-rails", groups: [ :development, :test ]
