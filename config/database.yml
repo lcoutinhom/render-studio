@@ -1,0 +1,59 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  host: <%= ENV.fetch("DB_HOST", "127.0.0.1") %>
+  port: <%= ENV.fetch("DB_PORT", 55432) %>
+  username: <%= ENV.fetch("DB_USER", "render_studio") %>
+  password: <%= ENV.fetch("DB_PASSWORD", "render_studio_local") %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
+
+development:
+  primary:
+    <<: *default
+    database: render_studio_development
+  queue:
+    <<: *default
+    database: render_studio_development_queue
+    migrations_paths: db/queue_migrate
+  cache:
+    <<: *default
+    database: render_studio_development_cache
+    migrations_paths: db/cache_migrate
+  cable:
+    <<: *default
+    database: render_studio_development_cable
+    migrations_paths: db/cable_migrate
+
+test:
+  primary:
+    <<: *default
+    database: render_studio_test
+  queue:
+    <<: *default
+    database: render_studio_test_queue
+    migrations_paths: db/queue_migrate
+  cache:
+    <<: *default
+    database: render_studio_test_cache
+    migrations_paths: db/cache_migrate
+  cable:
+    <<: *default
+    database: render_studio_test_cable
+    migrations_paths: db/cable_migrate
+
+production:
+  primary:
+    adapter: postgresql
+    url: <%= ENV["DATABASE_URL"] %>
+  queue:
+    adapter: postgresql
+    url: <%= ENV["QUEUE_DATABASE_URL"] %>
+    migrations_paths: db/queue_migrate
+  cache:
+    adapter: postgresql
+    url: <%= ENV["CACHE_DATABASE_URL"] %>
+    migrations_paths: db/cache_migrate
+  cable:
+    adapter: postgresql
+    url: <%= ENV["CABLE_DATABASE_URL"] %>
+    migrations_paths: db/cable_migrate

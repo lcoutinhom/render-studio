@@ -1,0 +1,39 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  foundation:
+    runs-on: ubuntu-latest
+    env:
+      RAILS_ENV: test
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_USER: render_studio
+      DB_PASSWORD: render_studio_local
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: render_studio
+          POSTGRES_PASSWORD: render_studio_local
+        ports: ["5432:5432"]
+        options: --health-cmd="pg_isready -U render_studio" --health-interval=5s --health-timeout=5s --health-retries=10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          working-directory: render-studio
+          bundler-cache: true
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - name: Dependencies and build
+        working-directory: render-studio
+        run: bun install --frozen-lockfile && bun run build
+      - name: Database and checks
+        working-directory: render-studio
+        run: |
+          bin/rails db:prepare
+          bin/rails zeitwerk:check
+          bundle exec rspec
+          bin/rubocop
+          bin/brakeman --quiet --no-pager

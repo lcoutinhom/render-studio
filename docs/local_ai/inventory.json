@@ -1,0 +1,15 @@
+{
+  "timestamp_utc": "2026-11-03T17:32:51.602173+00:00",
+  "python": "3.13.12",
+  "kernel": "7.1.1-76070101-generic",
+  "packages": {
+    "torch": "2.12.0+rocm7.14.0",
+    "torchvision": "0.27.0+rocm7.14.0",
+    "torchaudio": "2.11.0+rocm7.14.0",
+    "transformers": "5.20.2",
+    "safetensors": "0.8.0",
+    "comfyui-frontend-package": "1.55.18",
+    "comfy-kitchen": "0.2.39",
+    "comfy-aimdo": "0.5.6"
+  }
+}

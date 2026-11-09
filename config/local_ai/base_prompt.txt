@@ -1,0 +1,13 @@
+Transform the provided architectural reference image into an ultra-photorealistic professional architectural photograph.
+
+Preserve the original geometry, shapes, proportions, layout, furniture positions, camera angle and composition.
+
+Maintain the original material identities, colors, wood grains, stone textures, metallic finishes, glass transparency and surface characteristics.
+
+Do not add, remove, move, resize or replace objects.
+
+Do not redesign the architecture.
+
+Improve only realistic lighting, indirect illumination, shadows, reflections, exposure and photographic quality.
+
+The final result must resemble a professional photograph of the completed architectural project while remaining faithful to the original design.

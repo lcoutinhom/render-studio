@@ -1,0 +1,19 @@
+default: &default
+  dispatchers:
+    - polling_interval: 1
+      batch_size: 100
+  workers:
+    - queues: [default, maintenance]
+      threads: 2
+      processes: 1
+      polling_interval: 0.5
+    - queues: [rendering]
+      threads: 1
+      processes: <%= ENV.fetch("RENDER_WORKERS", 1) %>
+      polling_interval: 0.5
+development:
+  <<: *default
+test:
+  <<: *default
+production:
+  <<: *default

@@ -1,0 +1,48 @@
+pt-BR:
+  hello: Olá
+  errors:
+    messages:
+      blank: não pode ficar em branco
+      taken: já está em uso
+      invalid: é inválido
+      confirmation: não confere
+      too_short: "deve ter pelo menos %{count} caracteres"
+      too_long: "deve ter no máximo %{count} caracteres"
+  activerecord:
+    attributes:
+      user:
+        name: Nome
+        email: E-mail
+        password: Senha
+        password_confirmation: Confirmação de senha
+        current_password: Senha atual
+  devise:
+    failure:
+      unauthenticated: Entre para continuar.
+      unconfirmed: Confirme seu e-mail para entrar.
+      invalid: E-mail ou senha inválidos.
+      not_found_in_database: E-mail ou senha inválidos.
+    sessions:
+      signed_in: Você entrou na sua conta.
+      signed_out: Você saiu da sua conta.
+      already_signed_out: Você saiu da sua conta.
+    registrations:
+      signed_up_but_unconfirmed: Conta criada. Confira seu e-mail para confirmar o cadastro.
+      updated: Perfil atualizado.
+      update_needs_confirmation: Confira seu novo e-mail para confirmar a alteração.
+    confirmations:
+      send_paranoid_instructions: Se o e-mail estiver cadastrado, você receberá as instruções de confirmação.
+      confirmed: E-mail confirmado.
+    passwords:
+      send_paranoid_instructions: Se o e-mail estiver cadastrado, você receberá as instruções de recuperação.
+      updated_not_active: Senha alterada. Entre para continuar.
+      updated: Senha alterada.
+    mailer:
+      confirmation_instructions:
+        subject: Confirme seu e-mail — Render Studio
+      reset_password_instructions:
+        subject: Recuperação de senha — Render Studio
+      email_changed:
+        subject: Alteração de e-mail — Render Studio
+      password_change:
+        subject: Senha alterada — Render Studio

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+comfy_source="${COMFYUI_SOURCE:-/home/lcoutinho/ComfyUI-Installs/ComfyUI/ComfyUI}"
+comfy_data="${COMFYUI_DATA:-/home/lcoutinho/ai/render-studio-local}"
+comfy_python="${COMFYUI_PYTHON:-$comfy_source/.venv/bin/python}"
+"$comfy_python" -c 'import torch; assert torch.version.hip and torch.cuda.is_available(), "ROCm GPU required; CPU fallback disabled"; print(torch.__version__, torch.cuda.get_device_name(0))'
+mkdir -p "$comfy_data"/{models/checkpoints,models/controlnet,models/diffusion_models,models/text_encoders,models/vae,input,output,user,temp}
+exec "$comfy_python" "$comfy_source/main.py" --base-directory "$comfy_data" --listen 127.0.0.1 --port 8188 --disable-all-custom-nodes --offline --disable-auto-launch --disable-dynamic-vram --disable-pinned-memory --fp32-vae --reserve-vram 2 --cache-none

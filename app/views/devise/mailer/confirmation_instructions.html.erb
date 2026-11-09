@@ -1,0 +1,4 @@
+<p>Olá, <%= @resource.name %>.</p>
+<p>Confirme seu e-mail para acessar o Render Studio:</p>
+<p><%= link_to "Confirmar e-mail", confirmation_url(@resource, confirmation_token: @token) %></p>
+<p>Se você não solicitou este cadastro ou alteração, ignore a mensagem.</p>

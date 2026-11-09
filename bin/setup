@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+require "fileutils"
+APP_ROOT = File.expand_path("..", __dir__)
+FileUtils.chdir APP_ROOT do
+  FileUtils.cp ".env.example", ".env" unless File.exist?(".env")
+  system("bundle check") || system("bundle install", exception: true)
+  system("bun install --frozen-lockfile", exception: true)
+  system("bin/rails db:prepare", exception: true)
+  system("bun run build", exception: true)
+  exec "bin/dev" unless ARGV.include?("--skip-server")
+end

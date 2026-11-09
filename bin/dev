@@ -1,0 +1,156 @@
+#!/usr/bin/env ruby
+require "fileutils"
+require "socket"
+
+# Owns only the process groups it starts; existing services are never killed.
+class DevSupervisor
+  def initialize(services:, log_directory:, shutdown_timeout: 10)
+    @services = services
+    @log_directory = log_directory
+    @shutdown_timeout = shutdown_timeout
+    @children = {}
+    @readers = []
+    @stopping = false
+  end
+
+  def run
+    previous = %w[INT TERM].to_h { |signal| [signal, Signal.trap(signal) { @stopping = true }] }
+    FileUtils.mkdir_p(@log_directory)
+    @services.each do |name, command|
+      reader, writer = IO.pipe
+      begin
+        pid = Process.spawn(*command, out: writer, err: writer, pgroup: true)
+      rescue StandardError
+        reader.close
+        raise
+      ensure
+        writer.close
+      end
+      @children[pid] = name
+      @readers << Thread.new do
+        File.open(File.join(@log_directory, "#{name}.log"), "a") do |log|
+          reader.each_line do |line|
+            log.write(line)
+            log.flush
+            $stdout.write("[#{name}] #{line}")
+            $stdout.flush
+          end
+        end
+      ensure
+        reader.close
+      end
+      puts "[dev] #{name} iniciado (PID #{pid})."
+    end
+    until @stopping
+      @children.each do |pid, name|
+        result = Process.waitpid2(pid, Process::WNOHANG)
+        next unless result
+        status = result.last
+        warn "[dev] #{name} encerrou; desligando os demais serviços."
+        return status.success? ? 0 : (status.exitstatus || 1)
+      end
+      sleep 0.2
+    end
+    0
+  rescue SystemCallError => error
+    warn "[dev] Não foi possível iniciar os serviços: #{error.message}"
+    1
+  ensure
+    shutdown
+    previous&.each { |signal, handler| Signal.trap(signal, handler) }
+  end
+
+  private
+
+  def shutdown
+    # Include groups whose leader already exited, since they may have descendants.
+    @children.each_key { |pid| signal_group("TERM", pid) }
+    deadline = Process.clock_gettime(Process::CLOCK_MONOTONIC) + @shutdown_timeout
+    loop do
+      @children.each_key do |pid|
+        Process.waitpid(pid, Process::WNOHANG)
+      rescue Errno::ECHILD
+        nil
+      end
+      break unless @children.keys.any? { |pid| group_alive?(pid) }
+      break if Process.clock_gettime(Process::CLOCK_MONOTONIC) >= deadline
+      sleep 0.1
+    end
+    @children.each_key { |pid| signal_group("KILL", pid) if group_alive?(pid) }
+    @children.each_key do |pid|
+      Process.waitpid(pid)
+    rescue Errno::ECHILD
+      nil
+    end
+    @readers.each { |thread| thread.join(2) }
+  end
+
+  def signal_group(signal, pid)
+    Process.kill(signal, -pid)
+  rescue Errno::ESRCH
+    nil
+  end
+
+  def group_alive?(pid)
+    Process.kill(0, -pid)
+    true
+  rescue Errno::ESRCH
+    false
+  end
+end
+
+if $PROGRAM_NAME == __FILE__
+  Dir.chdir(File.expand_path("..", __dir__))
+  require "bundler/setup"
+  require "dotenv"
+  Dotenv.load(".env.development.local", ".env.local", ".env.development", ".env")
+  $stdout.sync = true
+
+  begin
+    app_port = Integer(ENV.fetch("APP_PORT", "3100"), 10)
+    raise ArgumentError, "APP_PORT deve estar entre 1 e 65535" unless (1..65535).cover?(app_port)
+    services = {
+      "rails" => ["bin/rails", "server", "-b", "127.0.0.1", "-p", app_port.to_s],
+      "vite" => ["bun", "run", "dev", "--host", "127.0.0.1"]
+    }
+    services["jobs"] = ["bin/jobs"] if ENV.fetch("DEV_JOBS", "true") == "true" && !ENV["SOLID_QUEUE_IN_PUMA"]
+    services["comfyui"] = ["script/local_ai/start"] if ENV.fetch("DEV_COMFYUI", "true") == "true"
+
+    # Refuse duplicate listeners before starting anything. Vite's port follows its config.
+    require "json"
+    vite_port = Integer(ENV.fetch("VITE_RUBY_PORT", JSON.parse(File.read("config/vite.json")).dig("development", "port").to_s), 10)
+    ports = { "Rails" => app_port, "Vite" => vite_port }
+    ports["ComfyUI"] = 8188 if services.key?("comfyui")
+    ports.each do |name, port|
+      ["127.0.0.1", "::1"].each do |host|
+        begin
+          Socket.tcp(host, port, connect_timeout: 0.2) { |socket| socket.close }
+          abort "[dev] #{name}: porta #{port} já está em uso. Encerre a instância anterior antes de rodar bin/dev."
+        rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Errno::ENETUNREACH, Errno::EAFNOSUPPORT, Errno::ETIMEDOUT
+          nil
+        end
+      end
+      TCPServer.open("127.0.0.1", port).close
+    rescue Errno::EADDRINUSE
+      abort "[dev] #{name}: porta #{port} já está em uso. Encerre a instância anterior antes de rodar bin/dev."
+    end
+
+    if services.key?("comfyui")
+      source = ENV.fetch("COMFYUI_SOURCE", "/home/lcoutinho/ComfyUI-Installs/ComfyUI/ComfyUI")
+      python = ENV.fetch("COMFYUI_PYTHON", File.join(source, ".venv/bin/python"))
+      abort "[dev] ComfyUI não encontrado. Configure COMFYUI_SOURCE/COMFYUI_PYTHON ou use DEV_COMFYUI=false." unless File.file?(File.join(source, "main.py")) && File.executable?(python)
+    end
+
+    if ENV.fetch("DEV_DATABASE", "true") == "true"
+      puts "[dev] Preparando PostgreSQL e Mailpit do compose..."
+      abort "[dev] Não foi possível iniciar o compose. Para banco externo use DEV_DATABASE=false." unless system("docker", "compose", "up", "-d", "--wait", "postgres", "mailpit")
+    end
+
+    puts "[dev] Aplicação: http://localhost:#{app_port}"
+    puts "[dev] ComfyUI: http://127.0.0.1:8188" if services.key?("comfyui")
+    puts "[dev] Logs: log/dev/. Ctrl+C encerra os processos iniciados aqui; os containers ficam disponíveis."
+    exit DevSupervisor.new(services: services, log_directory: "log/dev").run
+  rescue ArgumentError, SystemCallError => error
+    abort "[dev] #{error.message}"
+  end
+end

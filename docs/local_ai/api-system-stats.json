@@ -1,0 +1,71 @@
+{
+  "system": {
+    "os": "linux",
+    "ram_total": 33565888512,
+    "ram_free": 8778788864,
+    "comfyui_version": "0.42.5",
+    "required_frontend_version": "1.55.18",
+    "installed_templates_version": "0.11.96",
+    "required_templates_version": "0.11.96",
+    "comfy_package_versions": [
+      {
+        "name": "comfyui-frontend-package",
+        "installed": "1.55.18",
+        "required": "1.55.18"
+      },
+      {
+        "name": "comfyui-workflow-templates",
+        "installed": "0.11.96",
+        "required": "0.11.96"
+      },
+      {
+        "name": "comfyui-embedded-docs",
+        "installed": "0.5.14",
+        "required": "0.5.14"
+      },
+      {
+        "name": "comfy-kitchen",
+        "installed": "0.2.39",
+        "required": "0.2.39"
+      },
+      {
+        "name": "comfy-aimdo",
+        "installed": "0.5.6",
+        "required": "0.5.6"
+      }
+    ],
+    "python_version": "3.13.12 (main, Feb 12 2026, 00:45:41) [Clang 21.1.4 ]",
+    "pytorch_version": "2.12.0+rocm7.14.0",
+    "embedded_python": false,
+    "deploy_environment": "local-desktop2-standalone",
+    "argv": [
+      "/home/lcoutinho/ComfyUI-Installs/ComfyUI/ComfyUI/main.py",
+      "--base-directory",
+      "/home/lcoutinho/ai/render-studio-local",
+      "--listen",
+      "127.0.0.1",
+      "--port",
+      "8188",
+      "--disable-all-custom-nodes",
+      "--offline",
+      "--disable-auto-launch",
+      "--disable-dynamic-vram",
+      "--disable-pinned-memory",
+      "--fp32-vae",
+      "--reserve-vram",
+      "2",
+      "--cache-none"
+    ]
+  },
+  "devices": [
+    {
+      "name": "cuda:0 AMD Radeon RX 9060 XT : native",
+      "type": "cuda",
+      "index": 0,
+      "vram_total": 17095983104,
+      "vram_free": 16318464000,
+      "torch_vram_total": 79691776,
+      "torch_vram_free": 0
+    }
+  ]
+}

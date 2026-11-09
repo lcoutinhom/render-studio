@@ -1,0 +1,169 @@
+/* Render Studio design tokens. Source of truth: design-system/MASTER.md.
+   Semantic variables switch per theme; Tailwind utilities map to them below. */
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  --text-2xs: 11px;
+  --text-2xs--line-height: 16px;
+  --text-xs: 12px;
+  --text-xs--line-height: 18px;
+  --text-sm: 14px;
+  --text-sm--line-height: 22px;
+  --text-meta: 13px;
+  --text-meta--line-height: 20px;
+
+  /* Brass accent. Kept under the legacy "brand" name so existing utilities follow the identity. */
+  --color-brand-50: #fbf7ee;
+  --color-brand-100: #f5ebd3;
+  --color-brand-200: #ead5a6;
+  --color-brand-300: #ddbb73;
+  --color-brand-400: #cfa04a;
+  --color-brand-500: #b8862f;
+  --color-brand-600: #9a6c22;
+  --color-brand-700: #7c541d;
+  --color-brand-800: #65441d;
+  --color-brand-900: #54391c;
+  --color-brand-950: #2a2114;
+
+  /* Warm stone neutrals replace Tailwind's cool gray. */
+  --color-gray-50: #faf9f7;
+  --color-gray-100: #f1efeb;
+  --color-gray-200: #e6e3de;
+  --color-gray-300: #d6d2cb;
+  --color-gray-400: #a8a29a;
+  --color-gray-500: #7d776f;
+  --color-gray-600: #5e5953;
+  --color-gray-700: #45413c;
+  --color-gray-800: #2a2724;
+  --color-gray-900: #1c1a17;
+  --color-gray-950: #0f0e0c;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  --shadow-xs: 0 1px 2px rgb(28 26 23 / 0.05);
+  --shadow-card: 0 1px 2px rgb(28 26 23 / 0.04);
+  --shadow-pop: 0 8px 24px -6px rgb(28 26 23 / 0.14), 0 2px 6px -2px rgb(28 26 23 / 0.06);
+  --shadow-dialog: 0 24px 48px -12px rgb(28 26 23 / 0.22), 0 4px 12px -4px rgb(28 26 23 / 0.08);
+
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --animate-fade-in: fade-in 180ms var(--ease-out);
+  --animate-dialog-in: dialog-in 220ms var(--ease-out);
+  --animate-pop-in: pop-in 160ms var(--ease-out);
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+  }
+  @keyframes dialog-in {
+    from { opacity: 0; transform: translate(-50%, calc(-50% + 8px)) scale(0.98); }
+  }
+  @keyframes pop-in {
+    from { opacity: 0; transform: translateY(-4px); }
+  }
+}
+
+:root {
+  --background: #f7f6f3;
+  --foreground: #1c1a17;
+  --card: #ffffff;
+  --card-foreground: #1c1a17;
+  --popover: #ffffff;
+  --popover-foreground: #1c1a17;
+  --primary: #1c1a17;
+  --primary-hover: #34302b;
+  --primary-foreground: #faf9f7;
+  --secondary: #f1efeb;
+  --secondary-foreground: #2a2724;
+  --muted: #f1efeb;
+  --muted-foreground: #6b655d;
+  --accent: #fbf7ee;
+  --accent-foreground: #7c541d;
+  --border: #e6e3de;
+  --input: #948e85;
+  --ring: #9a6c22;
+  --success: #15803d;
+  --success-soft: #ecf6ef;
+  --warning: #b45309;
+  --warning-soft: #fdf4e7;
+  --destructive: #b42318;
+  --destructive-soft: #fdf0ef;
+  --destructive-foreground: #ffffff;
+  --info: #1d4ed8;
+  --info-soft: #eef3fd;
+  --sidebar: #ffffff;
+  --header: rgb(247 246 243 / 0.85);
+  --overlay: rgb(28 26 23 / 0.4);
+  --radius: 8px;
+  --dur-fast: 120ms;
+  --dur-base: 180ms;
+  --dur-slow: 240ms;
+}
+
+.dark {
+  --background: #0f0e0c;
+  --foreground: #f2efea;
+  --card: #171614;
+  --card-foreground: #f2efea;
+  --popover: #1c1a17;
+  --popover-foreground: #f2efea;
+  --primary: #f2efea;
+  --primary-hover: #ffffff;
+  --primary-foreground: #171614;
+  --secondary: #24221f;
+  --secondary-foreground: #e6e3de;
+  --muted: #1f1d1a;
+  --muted-foreground: #a39c92;
+  --accent: #2a2114;
+  --accent-foreground: #e3c27e;
+  --border: #2a2724;
+  --input: #6b655d;
+  --ring: #cfa04a;
+  --success: #4ade80;
+  --success-soft: #11261a;
+  --warning: #fbbf24;
+  --warning-soft: #2a1f0b;
+  --destructive: #f97066;
+  --destructive-soft: #2d1412;
+  --destructive-foreground: #1c0b0a;
+  --info: #7aa2f7;
+  --info-soft: #121b30;
+  --sidebar: #131210;
+  --header: rgb(15 14 12 / 0.85);
+  --overlay: rgb(0 0 0 / 0.6);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-destructive: var(--destructive);
+  --color-destructive-soft: var(--destructive-soft);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-sidebar: var(--sidebar);
+  --color-overlay: var(--overlay);
+  --radius: var(--radius);
+}
