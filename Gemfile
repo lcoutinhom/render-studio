@@ -11,7 +11,7 @@ gem "inertia_rails", "~> 3.0"
 gem "vite_rails", "~> 3.0"
 gem "solid_queue", "~> 1.3"
 gem "solid_cache", "~> 1.0"
-gem "solid_cable", "~> 3.0"
+gem "solid_cable", "~> 4.1"
 gem "dotenv-rails", groups: [ :development, :test ]
 gem "bcrypt", "~> 3.1"
 gem "rubyzip", "~> 3.0", require: "zip"
